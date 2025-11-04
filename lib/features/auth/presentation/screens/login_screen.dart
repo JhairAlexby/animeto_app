@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:animeto_app/features/auth/presentation/widgets/responsive_layout.dart';
+import 'package:animeto_app/core/widgets/responsive_layout.dart';
 import 'package:animeto_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:animeto_app/features/auth/presentation/widgets/auth_text_field.dart';
 
@@ -25,13 +25,25 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _submit(BuildContext context) {
+  void _submit(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
       final authProvider = context.read<AuthProvider>();
-      authProvider.login(
+      final success = await authProvider.login(
         _emailController.text,
         _passwordController.text,
       );
+
+      if (success) {
+      } else {
+        if (mounted && authProvider.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(authProvider.errorMessage!),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -83,7 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                   const SizedBox(height: 16),
                   TextButton(
-                    onPressed: () => context.pop(),
+                    onPressed: authProvider.isLoading
+                        ? null
+                        : () => context.pop(),
                     child: const Text('¿No tienes cuenta? Regístrate'),
                   ),
                 ],
