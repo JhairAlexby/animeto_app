@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:animeto_app/core/widgets/responsive_layout.dart';
+import 'package:animeto_app/features/auth/presentation/widgets/responsive_layout.dart';
 import 'package:animeto_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:animeto_app/features/auth/presentation/widgets/auth_text_field.dart';
 
