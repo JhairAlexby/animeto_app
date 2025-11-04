@@ -34,11 +34,20 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (success) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Inicio de sesión exitoso.'),
+            backgroundColor: Colors.green,
+          ),
+        );
       } else {
-        if (mounted && authProvider.errorMessage != null) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(authProvider.errorMessage!),
+              content: Text(
+                authProvider.errorMessage ?? 'Error al iniciar sesión',
+              ),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
