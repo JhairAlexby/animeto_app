@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:animeto_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:animeto_app/features/auth/presentation/screens/register_screen.dart';
 import 'package:animeto_app/features/auth/presentation/screens/welcome_screen.dart';
+import 'package:animeto_app/features/feed/presentation/screens/home_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -33,6 +34,10 @@ class AppRouter {
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
+      ),
+      GoRoute(
+        path: HomeScreen.route,
+        builder: (context, state) => const HomeScreen(),
       ),
     ],
   );

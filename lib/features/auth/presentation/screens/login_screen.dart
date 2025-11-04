@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:animeto_app/features/auth/presentation/widgets/responsive_layout.dart';
 import 'package:animeto_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:animeto_app/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:animeto_app/features/feed/presentation/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String route = '/login';
@@ -41,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
             backgroundColor: Colors.green,
           ),
         );
+        context.go(HomeScreen.route);
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
