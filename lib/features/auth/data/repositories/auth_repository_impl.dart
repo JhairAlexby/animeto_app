@@ -23,4 +23,16 @@ class AuthRepositoryImpl implements AuthRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<User> register(String name, String email, String password) async {
+    try {
+      final registerResponse =
+          await remoteDataSource.register(name, email, password);
+      await localDataSource.cacheToken(registerResponse.accessToken);
+      return registerResponse.user;
+    } on ServerException {
+      rethrow;
+    }
+  }
 }

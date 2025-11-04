@@ -5,6 +5,7 @@ import 'package:animeto_app/features/auth/data/models/login_response_model.dart'
 
 abstract class AuthRemoteDataSource {
   Future<LoginResponseModel> login(String email, String password);
+  Future<LoginResponseModel> register(String name, String email, String password);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -32,6 +33,35 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } on DioException catch (e) {
       throw ServerException(
           e.response?.data['message'] ?? 'Error de red: ${e.message}');
+    } catch (e) {
+      throw ServerException('Error inesperado: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<LoginResponseModel> register(String name, String email, String password) async {
+    try {
+      final response = await apiService.dio.post(
+        '/auth/register',
+        data: {
+          'name': name,
+          'email': email,
+          'password': password,
+        },
+      );
+
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          response.data['success'] == true) {
+        return LoginResponseModel.fromJson(response.data['data']);
+      } else {
+        throw ServerException(
+          response.data['message'] ?? 'Error de registro',
+        );
+      }
+    } on DioException catch (e) {
+      throw ServerException(
+        e.response?.data['message'] ?? 'Error de red: ${e.message}',
+      );
     } catch (e) {
       throw ServerException('Error inesperado: ${e.toString()}');
     }

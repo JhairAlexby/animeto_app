@@ -15,19 +15,21 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _submit(BuildContext context) {
+  void _submit(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
       if (_passwordController.text != _confirmPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -40,10 +42,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
 
       final authProvider = context.read<AuthProvider>();
-      authProvider.register(
+      final success = await authProvider.register(
+        _nameController.text,
         _emailController.text,
         _passwordController.text,
       );
+
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registro exitoso. Ya puedes iniciar sesión.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.pop();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              authProvider.errorMessage ?? 'Error al registrarse',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 
@@ -74,6 +98,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
+                  AuthTextField(
+                    controller: _nameController,
+                    icon: Icons.person_outline,
+                    label: 'Nombre',
+                  ),
+                  const SizedBox(height: 20),
                   AuthTextField(
                     controller: _emailController,
                     icon: Icons.email_outlined,

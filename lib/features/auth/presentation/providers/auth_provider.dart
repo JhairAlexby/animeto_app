@@ -37,9 +37,20 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> register(String email, String password) async {
+  Future<bool> register(String name, String email, String password) async {
     _setLoading(true);
-    await Future.delayed(const Duration(seconds: 2));
-    _setLoading(false);
+    _errorMessage = null;
+
+    try {
+      final registeredUser =
+          await authRepository.register(name, email, password);
+      _user = registeredUser;
+      _setLoading(false);
+      return true;
+    } on ServerException catch (e) {
+      _errorMessage = e.message;
+      _setLoading(false);
+      return false;
+    }
   }
 }
