@@ -4,6 +4,7 @@ import 'package:animeto_app/features/feed/domain/entities/publication.dart';
 import 'package:animeto_app/features/feed/domain/repositories/publication_repository.dart';
 import 'package:animeto_app/features/feed/domain/repositories/reaction_repository.dart';
 import 'package:animeto_app/features/feed/domain/constants/reaction_constants.dart';
+import 'package:animeto_app/features/feed/domain/entities/comment.dart';
 
 enum FeedState { initial, loading, loaded, error }
 
@@ -49,20 +50,10 @@ class FeedProvider extends ChangeNotifier {
 
       final index = _publications.indexWhere((p) => p.id == publicationId);
       if (index != -1) {
-        // La API maneja el toggle automático:
-        // - Si existe reacción del mismo tipo: se elimina (toggle off)
-        // - Si existe pero es diferente tipo: se actualiza
-        // - Si no existe: se crea nueva
-        
-        // Limpiar reacciones previas del usuario actual y agregar la nueva
-        // (o ninguna si fue eliminada por el toggle)
         _publications[index].reactions.removeWhere((r) => r.userId == reaction.userId);
-        
-        // Si la reacción no es nula (no fue eliminada por toggle), agregarla
         if (reaction.type.isNotEmpty) {
           _publications[index].reactions.add(reaction);
         }
-        
         notifyListeners();
       }
       return true;
@@ -88,9 +79,30 @@ class FeedProvider extends ChangeNotifier {
         tags: tags,
         imagePath: imagePath,
       );
-      // Insertar al inicio de la lista
       _publications.insert(0, newPublication);
       notifyListeners();
+      return true;
+    } on ServerException catch (e) {
+      _errorMessage = e.message;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> createComment(
+      {required String content, required String postId, String? parentId}) async {
+    try {
+      final newComment = await publicationRepository.createComment(
+        content: content,
+        postId: postId,
+        parentId: parentId,
+      );
+
+      final index = _publications.indexWhere((p) => p.id == postId);
+      if (index != -1) {
+        _publications[index].comments.insert(0, newComment);
+        notifyListeners();
+      }
       return true;
     } on ServerException catch (e) {
       _errorMessage = e.message;

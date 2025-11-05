@@ -2,6 +2,7 @@ import 'package:animeto_app/core/errors/exceptions.dart';
 import 'package:animeto_app/features/feed/data/datasources/publication_remote_data_source.dart';
 import 'package:animeto_app/features/feed/domain/entities/publication.dart';
 import 'package:animeto_app/features/feed/domain/repositories/publication_repository.dart';
+import 'package:animeto_app/features/feed/domain/entities/comment.dart';
 
 class PublicationRepositoryImpl implements PublicationRepository {
   final PublicationRemoteDataSource remoteDataSource;
@@ -35,6 +36,21 @@ class PublicationRepositoryImpl implements PublicationRepository {
         imagePath: imagePath,
       );
       return publication;
+    } on ServerException {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Comment> createComment(
+      {required String content, required String postId, String? parentId}) async {
+    try {
+      final comment = await remoteDataSource.createComment(
+        content: content,
+        postId: postId,
+        parentId: parentId,
+      );
+      return comment;
     } on ServerException {
       rethrow;
     }

@@ -7,6 +7,8 @@ import 'package:animeto_app/features/feed/domain/constants/reaction_constants.da
 import 'package:animeto_app/features/feed/presentation/providers/feed_provider.dart';
 import 'package:animeto_app/features/feed/presentation/widgets/authenticated_network_image.dart';
 
+import 'package:animeto_app/features/feed/presentation/widgets/comment_card.dart';
+
 class PublicationCard extends StatelessWidget {
   final Publication publication;
 
@@ -90,6 +92,75 @@ class PublicationCard extends StatelessWidget {
             commentCount: publication.comments.length,
             onLike: () => _react(context, ReactionTypes.like),
             onDislike: () => _react(context, ReactionTypes.dislike),
+            onComment: () => _showCommentDialog(context, publication.id),
+          ),
+          if (publication.comments.isNotEmpty)
+            _buildCommentsSection(context, theme),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommentsSection(BuildContext context, ThemeData theme) {
+    final commentsToShow = publication.comments.take(2).toList();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ...commentsToShow.map((comment) => CommentCard(comment: comment)),
+          if (publication.comments.length > 2)
+            TextButton(
+              onPressed: () {},
+              child: Text('Ver todos los ${publication.comments.length} comentarios'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showCommentDialog(BuildContext context, String postId) {
+    final TextEditingController controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Escribe un comentario'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Tu comentario...',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final content = controller.text.trim();
+              if (content.isNotEmpty) {
+                final provider = context.read<FeedProvider>();
+                final ok = await provider.createComment(
+                  content: content,
+                  postId: postId,
+                );
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                  if (!ok) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(provider.errorMessage),
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                      ),
+                    );
+                  }
+                }
+              }
+            },
+            child: const Text('Publicar'),
           ),
         ],
       ),

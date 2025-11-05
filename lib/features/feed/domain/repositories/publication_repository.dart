@@ -1,3 +1,4 @@
+import 'package:animeto_app/features/feed/domain/entities/comment.dart';
 import 'package:animeto_app/features/feed/domain/entities/publication.dart';
 
 abstract class PublicationRepository {
@@ -8,5 +9,10 @@ abstract class PublicationRepository {
     int? currentChapters,
     List<String>? tags,
     String? imagePath,
+  });
+  Future<Comment> createComment({
+    required String content,
+    required String postId,
+    String? parentId,
   });
 }

@@ -3,6 +3,7 @@ import 'package:animeto_app/core/errors/exceptions.dart';
 import 'package:animeto_app/core/services/api_service.dart';
 import 'package:animeto_app/core/errors/error_utils.dart';
 import 'package:animeto_app/features/feed/data/models/publication_model.dart';
+import 'package:animeto_app/features/feed/data/models/comment_model.dart';
 
 abstract class PublicationRemoteDataSource {
   Future<List<PublicationModel>> getPublications(int page, int limit);
@@ -12,6 +13,11 @@ abstract class PublicationRemoteDataSource {
     int? currentChapters,
     List<String>? tags,
     String? imagePath,
+  });
+  Future<CommentModel> createComment({
+    required String content,
+    required String postId,
+    String? parentId,
   });
 }
 
@@ -72,7 +78,7 @@ class PublicationRemoteDataSourceImpl implements PublicationRemoteDataSource {
             formData.fields.add(MapEntry('tags[]', t));
           }
         }
-        final fileName = imagePath.split(RegExp(r'[\\/]')).last;
+        final fileName = imagePath.split(RegExp(r'[\/]')).last;
         formData.files.add(
           MapEntry(
             'image',
@@ -107,6 +113,37 @@ class PublicationRemoteDataSourceImpl implements PublicationRemoteDataSource {
       } else {
         throw ServerException(
           response.data['message'] ?? 'Error al crear publicación',
+        );
+      }
+    } on DioException catch (e) {
+      throw ServerException(messageFromDioException(e));
+    } catch (e) {
+      throw ServerException('Error inesperado: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<CommentModel> createComment({
+    required String content,
+    required String postId,
+    String? parentId,
+  }) async {
+    try {
+      final response = await apiService.dio.post(
+        '/comments',
+        data: {
+          'content': content,
+          'postId': postId,
+          if (parentId != null) 'parentId': parentId,
+        },
+      );
+
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          response.data['success'] == true) {
+        return CommentModel.fromJson(response.data['data']);
+      } else {
+        throw ServerException(
+          response.data['message'] ?? 'Error al crear el comentario',
         );
       }
     } on DioException catch (e) {

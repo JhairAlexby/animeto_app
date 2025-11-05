@@ -5,6 +5,7 @@ class PublicationActions extends StatelessWidget {
   final int commentCount;
   final VoidCallback onLike;
   final VoidCallback onDislike;
+  final VoidCallback onComment;
 
   const PublicationActions({
     super.key,
@@ -12,6 +13,7 @@ class PublicationActions extends StatelessWidget {
     required this.commentCount,
     required this.onLike,
     required this.onDislike,
+    required this.onComment,
   });
 
   @override
@@ -39,7 +41,7 @@ class PublicationActions extends StatelessWidget {
               const SizedBox(width: 16),
               IconButton(
                 icon: Icon(Icons.comment_outlined, color: iconColor),
-                onPressed: () {},
+                onPressed: onComment,
               ),
               Text(commentCount.toString()),
             ],
