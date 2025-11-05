@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:animeto_app/features/feed/presentation/providers/feed_provider.dart';
 import 'package:animeto_app/features/feed/presentation/widgets/publication_card.dart';
+import 'package:animeto_app/features/feed/presentation/screens/create_post_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String route = '/home';
@@ -64,7 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          GoRouter.of(context).push(CreatePostScreen.route);
+        },
         child: const Icon(Icons.add),
       ),
     );

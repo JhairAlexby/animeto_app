@@ -4,6 +4,7 @@ import 'package:animeto_app/features/auth/presentation/screens/login_screen.dart
 import 'package:animeto_app/features/auth/presentation/screens/register_screen.dart';
 import 'package:animeto_app/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:animeto_app/features/feed/presentation/screens/home_screen.dart';
+import 'package:animeto_app/features/feed/presentation/screens/create_post_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -38,6 +39,15 @@ class AppRouter {
       GoRoute(
         path: HomeScreen.route,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: CreatePostScreen.route,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const CreatePostScreen(),
+          transitionsBuilder:
+              (context, animation, secondaryAnimation, child) =>
+                  FadeTransition(opacity: animation, child: child),
+        ),
       ),
     ],
   );

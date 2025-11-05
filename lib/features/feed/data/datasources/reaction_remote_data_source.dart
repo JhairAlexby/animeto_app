@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:animeto_app/core/errors/exceptions.dart';
 import 'package:animeto_app/core/services/api_service.dart';
+import 'package:animeto_app/core/errors/error_utils.dart';
 import 'package:animeto_app/features/feed/data/models/reaction_model.dart';
 
 abstract class ReactionRemoteDataSource {
@@ -51,9 +52,7 @@ class ReactionRemoteDataSourceImpl implements ReactionRemoteDataSource {
         );
       }
     } on DioException catch (e) {
-      throw ServerException(
-        e.response?.data['message'] ?? 'Error de red: ${e.message}',
-      );
+      throw ServerException(messageFromDioException(e));
     } catch (e) {
       throw ServerException('Error inesperado: ${e.toString()}');
     }

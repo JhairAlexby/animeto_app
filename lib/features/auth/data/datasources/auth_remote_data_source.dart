@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:animeto_app/core/errors/exceptions.dart';
 import 'package:animeto_app/core/services/api_service.dart';
+import 'package:animeto_app/core/errors/error_utils.dart';
 import 'package:animeto_app/features/auth/data/models/login_response_model.dart';
 
 abstract class AuthRemoteDataSource {
@@ -31,8 +32,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             response.data['message'] ?? 'Error de inicio de sesión');
       }
     } on DioException catch (e) {
-      throw ServerException(
-          e.response?.data['message'] ?? 'Error de red: ${e.message}');
+      throw ServerException(messageFromDioException(e));
     } catch (e) {
       throw ServerException('Error inesperado: ${e.toString()}');
     }
@@ -59,9 +59,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         );
       }
     } on DioException catch (e) {
-      throw ServerException(
-        e.response?.data['message'] ?? 'Error de red: ${e.message}',
-      );
+      throw ServerException(messageFromDioException(e));
     } catch (e) {
       throw ServerException('Error inesperado: ${e.toString()}');
     }

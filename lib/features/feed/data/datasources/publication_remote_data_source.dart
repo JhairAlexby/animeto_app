@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:animeto_app/core/errors/exceptions.dart';
 import 'package:animeto_app/core/services/api_service.dart';
+import 'package:animeto_app/core/errors/error_utils.dart';
 import 'package:animeto_app/features/feed/data/models/publication_model.dart';
 
 abstract class PublicationRemoteDataSource {
@@ -40,8 +41,7 @@ class PublicationRemoteDataSourceImpl implements PublicationRemoteDataSource {
             response.data['message'] ?? 'Error al cargar publicaciones');
       }
     } on DioException catch (e) {
-      throw ServerException(
-          e.response?.data['message'] ?? 'Error de red: ${e.message}');
+      throw ServerException(messageFromDioException(e));
     } catch (e) {
       throw ServerException('Error inesperado: ${e.toString()}');
     }
@@ -80,6 +80,9 @@ class PublicationRemoteDataSourceImpl implements PublicationRemoteDataSource {
           ),
         );
 
+        final url = apiService.dio.options.baseUrl + '/posts';
+        print('Calling URL: $url');
+
         response = await apiService.dio.post(
           '/posts',
           data: formData,
@@ -93,6 +96,9 @@ class PublicationRemoteDataSourceImpl implements PublicationRemoteDataSource {
           if (currentChapters != null) 'currentChapters': currentChapters,
           if (tags != null) 'tags': tags,
         };
+
+        final url = apiService.dio.options.baseUrl + '/posts';
+        print('Calling URL: $url');
 
         response = await apiService.dio.post(
           '/posts',
@@ -110,9 +116,7 @@ class PublicationRemoteDataSourceImpl implements PublicationRemoteDataSource {
         );
       }
     } on DioException catch (e) {
-      throw ServerException(
-        e.response?.data['message'] ?? 'Error de red: ${e.message}',
-      );
+      throw ServerException(messageFromDioException(e));
     } catch (e) {
       throw ServerException('Error inesperado: ${e.toString()}');
     }
