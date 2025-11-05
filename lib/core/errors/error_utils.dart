@@ -7,13 +7,8 @@ import 'package:dio/dio.dart';
 /// Output: a localized Spanish string describing the error cause.
 String messageFromDioException(DioException e) {
   final RequestOptions opts = e.requestOptions;
-  String? host;
-  try {
-    final uri = Uri.parse((opts.baseUrl ?? '') + (opts.path));
-    host = uri.host.isNotEmpty ? uri.host : null;
-  } catch (_) {
-    host = null;
-  }
+  final uri = Uri.parse(opts.baseUrl + opts.path);
+  final host = uri.host.isNotEmpty ? uri.host : null;
 
   switch (e.type) {
     case DioExceptionType.connectionTimeout:

@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as dio;
+
 import 'package:animeto_app/core/errors/exceptions.dart';
 import 'package:animeto_app/core/services/api_service.dart';
 import 'package:animeto_app/core/errors/error_utils.dart';
@@ -9,12 +11,42 @@ abstract class AuthRemoteDataSource {
   Future<LoginResponseModel> login(String email, String password);
   Future<LoginResponseModel> register(String name, String email, String password);
   Future<UserModel> getUserProfile();
+  Future<void> uploadProfilePhoto(String imagePath);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final ApiService apiService;
 
   AuthRemoteDataSourceImpl({required this.apiService});
+
+  @override
+  Future<void> uploadProfilePhoto(String imagePath) async {
+    try {
+      final fileName = imagePath.split(RegExp(r'[\\/]')).last;
+      final formData = dio.FormData.fromMap({
+        'photo': await dio.MultipartFile.fromFile(
+          imagePath,
+          filename: fileName,
+        ),
+      });
+
+      final response = await apiService.dio.post(
+        '/users/profile/photo',
+        data: formData,
+      );
+
+      if (response.statusCode != 200 || response.data['success'] != true) {
+        throw ServerException(
+          response.data['message'] ?? 'Error al subir la foto de perfil',
+        );
+      }
+    } on DioException catch (e) {
+      throw ServerException(messageFromDioException(e));
+    } catch (e) {
+      throw ServerException('Error inesperado: ${e.toString()}');
+    }
+  }
+
 
   @override
   Future<LoginResponseModel> login(String email, String password) async {

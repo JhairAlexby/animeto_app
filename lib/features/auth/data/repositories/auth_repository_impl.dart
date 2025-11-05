@@ -51,4 +51,13 @@ class AuthRepositoryImpl implements AuthRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<void> uploadProfilePhoto(String imagePath) async {
+    try {
+      await remoteDataSource.uploadProfilePhoto(imagePath);
+    } on ServerException {
+      rethrow;
+    }
+  }
 }

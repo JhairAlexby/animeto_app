@@ -43,6 +43,23 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> uploadProfilePhoto(String imagePath) async {
+    _setLoading(true);
+    _errorMessage = null;
+
+    try {
+      await authRepository.uploadProfilePhoto(imagePath);
+      // After uploading, refresh the user profile to get the new photo status
+      await getUserProfile();
+      _setLoading(false);
+      return true;
+    } on ServerException catch (e) {
+      _errorMessage = e.message;
+      _setLoading(false);
+      return false;
+    }
+  }
+
   Future<bool> login(String email, String password) async {
     _setLoading(true);
     _errorMessage = null;
