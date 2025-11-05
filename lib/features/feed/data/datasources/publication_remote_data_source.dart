@@ -80,9 +80,6 @@ class PublicationRemoteDataSourceImpl implements PublicationRemoteDataSource {
           ),
         );
 
-        final url = apiService.dio.options.baseUrl + '/posts';
-        print('Calling URL: $url');
-
         response = await apiService.dio.post(
           '/posts',
           data: formData,
@@ -96,9 +93,6 @@ class PublicationRemoteDataSourceImpl implements PublicationRemoteDataSource {
           if (currentChapters != null) 'currentChapters': currentChapters,
           if (tags != null) 'tags': tags,
         };
-
-        final url = apiService.dio.options.baseUrl + '/posts';
-        print('Calling URL: $url');
 
         response = await apiService.dio.post(
           '/posts',

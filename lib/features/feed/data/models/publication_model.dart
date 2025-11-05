@@ -29,9 +29,11 @@ class PublicationModel extends Publication {
       id: json['id'],
       description: json['description'],
       createdAt: DateTime.parse(json['createdAt'] ?? json['created_at']),
-      hasImage: (json['hasImage'] ?? json['has_image']) ?? false,
-      imageUrl: json['imageUrl'] ?? json['image_url'],
-      author: AuthorModel.fromJson(json['author']),
+      hasImage: json['image'] != null,
+      imageUrl: json['image'],
+      author: json['author'] != null
+          ? AuthorModel.fromJson(json['author'])
+          : AuthorModel(id: json['authorId'], name: '...'),
       reactions: reactionsList,
       comments: commentsList,
     );
