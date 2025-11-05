@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:animeto_app/features/feed/presentation/providers/feed_provider.dart';
 import 'package:animeto_app/features/feed/presentation/widgets/publication_card.dart';
 import 'package:animeto_app/features/feed/presentation/screens/create_post_screen.dart';
+import 'package:animeto_app/features/auth/presentation/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String route = '/home';
@@ -36,6 +37,15 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.notifications_none),
             onPressed: () {},
           ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () => GoRouter.of(context).push(ProfileScreen.route),
+            child: const CircleAvatar(
+              radius: 18,
+              child: Text('U'), // Placeholder for user initial
+            ),
+          ),
+          const SizedBox(width: 16),
         ],
       ),
       body: Consumer<FeedProvider>(

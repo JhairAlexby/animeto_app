@@ -6,6 +6,7 @@ class UserModel extends User {
     required super.name,
     required super.email,
     required super.hasProfilePhoto,
+    required super.createdAt,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +15,7 @@ class UserModel extends User {
       name: json['name'],
       email: json['email'],
       hasProfilePhoto: json['hasProfilePhoto'] ?? false,
+      createdAt: DateTime.parse(json['createdAt']),
     );
   }
 
@@ -23,6 +25,7 @@ class UserModel extends User {
       'name': name,
       'email': email,
       'hasProfilePhoto': hasProfilePhoto,
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 }

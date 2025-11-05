@@ -41,4 +41,14 @@ class AuthRepositoryImpl implements AuthRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<User> getUserProfile() async {
+    try {
+      final user = await remoteDataSource.getUserProfile();
+      return user;
+    } on ServerException {
+      rethrow;
+    }
+  }
 }
