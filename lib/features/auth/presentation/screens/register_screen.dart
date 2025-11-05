@@ -32,7 +32,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _submit(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
       if (_passwordController.text != _confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.of(context);
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Las contraseñas no coinciden'),
             backgroundColor: Colors.red,
@@ -41,6 +42,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return;
       }
 
+      final messenger = ScaffoldMessenger.of(context);
+      final theme = Theme.of(context);
+      final navigator = GoRouter.of(context);
       final authProvider = context.read<AuthProvider>();
       final success = await authProvider.register(
         _nameController.text,
@@ -48,23 +52,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _passwordController.text,
       );
 
-      if (!mounted) return;
+      if (!context.mounted) return;
 
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Registro exitoso. Ya puedes iniciar sesión.'),
             backgroundColor: Colors.green,
           ),
         );
-        context.pop();
+        navigator.pop();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text(
               authProvider.errorMessage ?? 'Error al registrarse',
             ),
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: theme.colorScheme.error,
           ),
         );
       }

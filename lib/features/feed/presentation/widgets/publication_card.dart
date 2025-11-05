@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:animeto_app/features/feed/domain/entities/publication.dart';
 import 'package:animeto_app/features/feed/presentation/widgets/publication_actions.dart';
+import 'package:animeto_app/features/feed/domain/constants/reaction_constants.dart';
+import 'package:animeto_app/features/feed/presentation/providers/feed_provider.dart';
 
 class PublicationCard extends StatelessWidget {
   final Publication publication;
@@ -19,7 +22,7 @@ class PublicationCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: theme.dividerColor.withOpacity(0.1),
+          color: theme.dividerColor.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -75,6 +78,56 @@ class PublicationCard extends StatelessWidget {
           PublicationActions(
             reactionCount: publication.reactions.length,
             commentCount: publication.comments.length,
+            onLike: () async {
+              final messenger = ScaffoldMessenger.of(context);
+              final theme = Theme.of(context);
+              final provider = context.read<FeedProvider>();
+              final ok = await provider.reactToPublication(
+                publication.id,
+                ReactionTypes.like,
+              );
+              if (!context.mounted) return;
+              if (!ok) {
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(provider.errorMessage),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+              } else {
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Reacción enviada'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
+            },
+            onDislike: () async {
+              final messenger = ScaffoldMessenger.of(context);
+              final theme = Theme.of(context);
+              final provider = context.read<FeedProvider>();
+              final ok = await provider.reactToPublication(
+                publication.id,
+                ReactionTypes.dislike,
+              );
+              if (!context.mounted) return;
+              if (!ok) {
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(provider.errorMessage),
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                );
+              } else {
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Reacción enviada'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
+            },
           ),
         ],
       ),

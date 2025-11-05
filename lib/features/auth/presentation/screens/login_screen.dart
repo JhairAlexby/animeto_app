@@ -28,15 +28,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submit(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
+      final messenger = ScaffoldMessenger.of(context);
+      final theme = Theme.of(context);
       final authProvider = context.read<AuthProvider>();
       final success = await authProvider.login(
         _emailController.text,
         _passwordController.text,
       );
 
+      if (!context.mounted) return;
+
       if (success) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Inicio de sesión exitoso.'),
             backgroundColor: Colors.green,
@@ -44,16 +47,14 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         context.go(HomeScreen.route);
       } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                authProvider.errorMessage ?? 'Error al iniciar sesión',
-              ),
-              backgroundColor: Theme.of(context).colorScheme.error,
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              authProvider.errorMessage ?? 'Error al iniciar sesión',
             ),
-          );
-        }
+            backgroundColor: theme.colorScheme.error,
+          ),
+        );
       }
     }
   }

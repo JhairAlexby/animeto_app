@@ -17,6 +17,9 @@ import 'package:animeto_app/features/feed/data/datasources/publication_remote_da
 import 'package:animeto_app/features/feed/data/repositories/publication_repository_impl.dart';
 import 'package:animeto_app/features/feed/domain/repositories/publication_repository.dart';
 import 'package:animeto_app/features/feed/presentation/providers/feed_provider.dart';
+import 'package:animeto_app/features/feed/data/datasources/reaction_remote_data_source.dart';
+import 'package:animeto_app/features/feed/data/repositories/reaction_repository_impl.dart';
+import 'package:animeto_app/features/feed/domain/repositories/reaction_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,14 +67,25 @@ class MyApp extends StatelessWidget {
             apiService: context.read<ApiService>(),
           ),
         ),
+        Provider<ReactionRemoteDataSource>(
+          create: (context) => ReactionRemoteDataSourceImpl(
+            apiService: context.read<ApiService>(),
+          ),
+        ),
         Provider<PublicationRepository>(
           create: (context) => PublicationRepositoryImpl(
             remoteDataSource: context.read<PublicationRemoteDataSource>(),
           ),
         ),
+        Provider<ReactionRepository>(
+          create: (context) => ReactionRepositoryImpl(
+            remoteDataSource: context.read<ReactionRemoteDataSource>(),
+          ),
+        ),
         ChangeNotifierProvider(
           create: (context) => FeedProvider(
             publicationRepository: context.read<PublicationRepository>(),
+            reactionRepository: context.read<ReactionRepository>(),
           ),
         ),
       ],

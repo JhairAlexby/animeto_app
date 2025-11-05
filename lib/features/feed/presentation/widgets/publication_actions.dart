@@ -4,11 +4,15 @@ import 'package:animeto_app/core/theme/app_colors.dart';
 class PublicationActions extends StatelessWidget {
   final int reactionCount;
   final int commentCount;
+  final VoidCallback onLike;
+  final VoidCallback onDislike;
 
   const PublicationActions({
     super.key,
     required this.reactionCount,
     required this.commentCount,
+    required this.onLike,
+    required this.onDislike,
   });
 
   @override
@@ -39,9 +43,16 @@ class PublicationActions extends StatelessWidget {
             _buildActionButton(
               context,
               icon: Icons.thumb_up_alt_outlined,
-              label: 'Reaccionar',
+              label: 'Like',
               color: AppColors.persimmon,
-              onPressed: () {},
+              onPressed: onLike,
+            ),
+            _buildActionButton(
+              context,
+              icon: Icons.thumb_down_alt_outlined,
+              label: 'Dislike',
+              color: AppColors.cerulean,
+              onPressed: onDislike,
             ),
             _buildActionButton(
               context,

@@ -12,16 +12,14 @@ class AppTheme {
         seedColor: AppColors.cerulean,
         primary: AppColors.cerulean,
         secondary: AppColors.persimmon,
-        background: AppColors.background,
         surface: AppColors.background,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
-        onBackground: AppColors.onBackground,
         onSurface: AppColors.onBackground,
         error: AppColors.error,
         onError: Colors.white,
         brightness: Brightness.light,
-        surfaceVariant: AppColors.rose,
+        surfaceContainerHighest: AppColors.rose,
         onSurfaceVariant: AppColors.cerulean,
         secondaryContainer: AppColors.rose,
         onSecondaryContainer: AppColors.persimmon,
@@ -40,7 +38,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.rose.withOpacity(0.3),
+        fillColor: AppColors.rose.withValues(alpha: 0.3),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -54,10 +52,10 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.cerulean, width: 2),
         ),
         labelStyle: const TextStyle(color: AppColors.cerulean),
-        prefixIconColor: MaterialStateColor.resolveWith((states) {
-          return states.contains(MaterialState.focused)
+        prefixIconColor: WidgetStateColor.resolveWith((states) {
+          return states.contains(WidgetState.focused)
               ? AppColors.cerulean
-              : AppColors.onBackground.withOpacity(0.6);
+              : AppColors.onBackground.withValues(alpha: 0.6);
         }),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
