@@ -16,19 +16,21 @@ class PublicationModel extends Publication {
   });
 
   factory PublicationModel.fromJson(Map<String, dynamic> json) {
-    var reactionsList = (json['reactions'] as List)
-        .map((i) => ReactionModel.fromJson(i))
-        .toList();
-    var commentsList = (json['comments'] as List)
-        .map((i) => CommentModel.fromJson(i))
-        .toList();
+    final reactionsJson = json['reactions'];
+    final commentsJson = json['comments'];
+    final reactionsList = reactionsJson is List
+        ? reactionsJson.map((i) => ReactionModel.fromJson(i)).toList()
+        : <ReactionModel>[];
+    final commentsList = commentsJson is List
+        ? commentsJson.map((i) => CommentModel.fromJson(i)).toList()
+        : <CommentModel>[];
 
     return PublicationModel(
       id: json['id'],
       description: json['description'],
-      createdAt: DateTime.parse(json['createdAt']),
-      hasImage: json['hasImage'] ?? false,
-      imageUrl: json['imageUrl'],
+      createdAt: DateTime.parse(json['createdAt'] ?? json['created_at']),
+      hasImage: (json['hasImage'] ?? json['has_image']) ?? false,
+      imageUrl: json['imageUrl'] ?? json['image_url'],
       author: AuthorModel.fromJson(json['author']),
       reactions: reactionsList,
       comments: commentsList,

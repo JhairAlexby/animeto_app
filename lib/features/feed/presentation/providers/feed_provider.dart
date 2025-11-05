@@ -72,4 +72,30 @@ class FeedProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> createPost({
+    required String description,
+    required String type,
+    int? currentChapters,
+    List<String>? tags,
+    String? imagePath,
+  }) async {
+    try {
+      final newPublication = await publicationRepository.createPost(
+        description: description,
+        type: type,
+        currentChapters: currentChapters,
+        tags: tags,
+        imagePath: imagePath,
+      );
+      // Insertar al inicio de la lista
+      _publications.insert(0, newPublication);
+      notifyListeners();
+      return true;
+    } on ServerException catch (e) {
+      _errorMessage = e.message;
+      notifyListeners();
+      return false;
+    }
+  }
 }

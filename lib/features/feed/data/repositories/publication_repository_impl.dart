@@ -17,4 +17,26 @@ class PublicationRepositoryImpl implements PublicationRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<Publication> createPost({
+    required String description,
+    required String type,
+    int? currentChapters,
+    List<String>? tags,
+    String? imagePath,
+  }) async {
+    try {
+      final publication = await remoteDataSource.createPost(
+        description: description,
+        type: type,
+        currentChapters: currentChapters,
+        tags: tags,
+        imagePath: imagePath,
+      );
+      return publication;
+    } on ServerException {
+      rethrow;
+    }
+  }
 }
