@@ -69,7 +69,7 @@ class PublicationRemoteDataSourceImpl implements PublicationRemoteDataSource {
         }
         if (tags != null) {
           for (final t in tags) {
-            formData.fields.add(MapEntry('tags', t));
+            formData.fields.add(MapEntry('tags[]', t));
           }
         }
         final fileName = imagePath.split(RegExp(r'[\\/]')).last;

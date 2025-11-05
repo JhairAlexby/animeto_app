@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:animeto_app/features/feed/presentation/providers/feed_provider.dart';
 
@@ -18,6 +21,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   final _tagsController = TextEditingController();
 
   String _type = 'manga';
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void dispose() {
@@ -25,6 +30,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     _currentChaptersController.dispose();
     _tagsController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
   }
 
   Future<void> _submit(BuildContext context) async {
@@ -38,9 +53,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     final description = _descriptionController.text.trim();
     final type = _type.trim();
     final currentChaptersText = _currentChaptersController.text.trim();
-    final currentChapters = currentChaptersText.isEmpty
-        ? null
-        : int.tryParse(currentChaptersText);
+    final currentChapters =
+        currentChaptersText.isEmpty ? null : int.tryParse(currentChaptersText);
     final tagsRaw = _tagsController.text.trim();
     final tags = tagsRaw.isEmpty
         ? null
@@ -55,7 +69,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       type: type,
       currentChapters: currentChapters,
       tags: tags,
-      imagePath: null,
+      imagePath: _image?.path,
     );
 
     if (!context.mounted) return;
@@ -161,6 +175,23 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   if (tags.length > 10) return 'Máximo 10 tags';
                   return null;
                 },
+              ),
+              const SizedBox(height: 24),
+              if (_image != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.file(
+                    _image!,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              const SizedBox(height: 12),
+              TextButton.icon(
+                onPressed: _pickImage,
+                icon: const Icon(Icons.image_outlined),
+                label: const Text('Seleccionar imagen (opcional)'),
               ),
               const SizedBox(height: 24),
               ElevatedButton(

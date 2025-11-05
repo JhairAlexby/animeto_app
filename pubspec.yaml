@@ -17,6 +17,7 @@ dependencies:
   dio: ^5.5.0
   shared_preferences: ^2.2.3
   timeago: ^3.6.1
+  image_picker: ^1.2.0
 
 dev_dependencies:
   flutter_test:
