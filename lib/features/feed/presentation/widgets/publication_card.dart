@@ -17,15 +17,11 @@ class PublicationCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
-      color: theme.colorScheme.surface,
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0),
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: theme.dividerColor.withOpacity(0.1),
-          width: 1,
-        ),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,7 +30,7 @@ class PublicationCard extends StatelessWidget {
             leading: CircleAvatar(
               backgroundColor: theme.colorScheme.secondaryContainer,
               child: Text(
-                publication.author.name.substring(0, 1),
+                publication.author.name.substring(0, 1).toUpperCase(),
                 style: TextStyle(
                   color: theme.colorScheme.onSecondaryContainer,
                   fontWeight: FontWeight.bold,
@@ -50,40 +46,36 @@ class PublicationCard extends StatelessWidget {
               style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
             ),
             trailing: IconButton(
-              icon: const Icon(Icons.more_horiz),
+              icon: const Icon(Icons.more_vert),
               onPressed: () {},
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Text(
               publication.description,
-              style: theme.textTheme.bodyMedium?.copyWith(fontSize: 15),
+              style: theme.textTheme.bodyLarge?.copyWith(fontSize: 16),
             ),
           ),
           if (publication.hasImage && publication.imageUrl != null)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: AuthenticatedNetworkImage(
-                  url: 'https://animeto-api-production.up.railway.app/api${publication.imageUrl!}',
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: AuthenticatedNetworkImage(
+                url: 'https://animeto-api-production.up.railway.app/api${publication.imageUrl!}',
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
           if (publication.tags.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: Wrap(
                 spacing: 8.0,
                 runSpacing: 4.0,
                 children: publication.tags
                     .map((tag) => Chip(
                           label: Text(tag),
-                          backgroundColor: theme.colorScheme.secondaryContainer,
+                          backgroundColor: theme.colorScheme.secondaryContainer.withOpacity(0.5),
                           labelStyle: TextStyle(
                             color: theme.colorScheme.onSecondaryContainer,
                             fontWeight: FontWeight.w500,
@@ -92,63 +84,39 @@ class PublicationCard extends StatelessWidget {
                     .toList(),
               ),
             ),
-          const SizedBox(height: 16),
+          const Divider(height: 1),
           PublicationActions(
             reactionCount: publication.reactions.length,
             commentCount: publication.comments.length,
-            onLike: () async {
-              final messenger = ScaffoldMessenger.of(context);
-              final theme = Theme.of(context);
-              final provider = context.read<FeedProvider>();
-              final ok = await provider.reactToPublication(
-                publication.id,
-                ReactionTypes.like,
-              );
-              if (!context.mounted) return;
-              if (!ok) {
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text(provider.errorMessage),
-                    backgroundColor: theme.colorScheme.error,
-                  ),
-                );
-              } else {
-                messenger.showSnackBar(
-                  const SnackBar(
-                    content: Text('Reacción enviada'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              }
-            },
-            onDislike: () async {
-              final messenger = ScaffoldMessenger.of(context);
-              final theme = Theme.of(context);
-              final provider = context.read<FeedProvider>();
-              final ok = await provider.reactToPublication(
-                publication.id,
-                ReactionTypes.dislike,
-              );
-              if (!context.mounted) return;
-              if (!ok) {
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text(provider.errorMessage),
-                    backgroundColor: theme.colorScheme.error,
-                  ),
-                );
-              } else {
-                messenger.showSnackBar(
-                  const SnackBar(
-                    content: Text('Reacción enviada'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              }
-            },
+            onLike: () => _react(context, ReactionTypes.like),
+            onDislike: () => _react(context, ReactionTypes.dislike),
           ),
         ],
       ),
     );
+  }
+
+  void _react(BuildContext context, String type) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final theme = Theme.of(context);
+    final provider = context.read<FeedProvider>();
+    final ok = await provider.reactToPublication(publication.id, type);
+    if (!context.mounted) return;
+    if (!ok) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(provider.errorMessage),
+          backgroundColor: theme.colorScheme.error,
+        ),
+      );
+    } else {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Reacción enviada'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
   }
 }
