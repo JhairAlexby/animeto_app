@@ -11,6 +11,7 @@ class Publication {
   final Author author;
   final List<Reaction> reactions;
   final List<Comment> comments;
+  final List<String> tags;
 
   Publication({
     required this.id,
@@ -21,5 +22,6 @@ class Publication {
     required this.author,
     required this.reactions,
     required this.comments,
+    required this.tags,
   });
 }
