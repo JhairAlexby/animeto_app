@@ -72,15 +72,14 @@ class FeedProvider extends ChangeNotifier {
     String? imagePath,
   }) async {
     try {
-      final newPublication = await publicationRepository.createPost(
+      await publicationRepository.createPost(
         description: description,
         type: type,
         currentChapters: currentChapters,
         tags: tags,
         imagePath: imagePath,
       );
-      _publications.insert(0, newPublication);
-      notifyListeners();
+      await fetchPublications();
       return true;
     } on ServerException catch (e) {
       _errorMessage = e.message;

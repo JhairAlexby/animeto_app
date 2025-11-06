@@ -35,7 +35,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: formData,
       );
 
-      if (response.statusCode != 200 || response.data['success'] != true) {
+      if (!((response.statusCode == 200 || response.statusCode == 201) &&
+          response.data['success'] == true)) {
         throw ServerException(
           response.data['message'] ?? 'Error al subir la foto de perfil',
         );
